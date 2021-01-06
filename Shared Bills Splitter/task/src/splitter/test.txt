@@ -1,0 +1,11 @@
+2020.09.30 borrow Ann Bob 20
+ someRandomText
+2020.10.01 repay Ann Bob 10
+2020.10.10 borrow Bob Ann 7
+2020.10.15 repay Ann Bob 8
+repay Bob Ann 5
+2020.09.25 balance
+2020.10.30 balance open
+2020.10.20 balance close
+balance close
+exit
