@@ -3,8 +3,6 @@ package splitter;
 import splitter.exceptions.InvalidArgumentException;
 import splitter.exceptions.UnknownCommandException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,25 +10,23 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static splitter.Type.BORROW;
 import static splitter.Type.REPAY;
 
 public class Main {
-
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     static String DATE_FORMAT = "yyyy.MM.dd";
     static DateFormat df = new SimpleDateFormat(DATE_FORMAT);
 
     static List<Person> personList = new ArrayList<>();
 
-    private static void createPerson(String name){
+    private static void createPerson(String name) {
         Account account = new Account(0);
         Person person = new Person(name, account);
         personList.add(person);
     }
 
-    public static void main(String[] args) throws ParseException, FileNotFoundException {
+    public static void main(String[] args) {
         createPerson("Ann");
         createPerson("Bob");
         createPerson("Ann");
@@ -92,11 +88,9 @@ public class Main {
                     if (parsed[2].equals("open")) {
                         LocalDate firstDayOfMonth = localDate.withDayOfMonth(1).minusDays(1);
                         System.out.println(balanceCloseChecker(personList, firstDayOfMonth));
-//                        System.out.println(balanceTotalCloseChecker(personList, localDate));
                     }
                     if (parsed[2].equals("close")) {
                         System.out.println(balanceCloseChecker(personList, localDate));
-//                        System.out.println(balanceTotalCloseChecker(personList, localDate));
                     }
                 }
 
@@ -106,15 +100,12 @@ public class Main {
                     if (parsed[0].equals("balance") & parsed[1].equals("close")) {
                         LocalDate localDate = LocalDate.now();
                         System.out.println(balanceCloseChecker(personList, localDate));
-//                        System.out.println(balanceTotalCloseChecker(personList, localDate));
                         break;
                     } else if (isDateValid(parsed[0]) & parsed[1].equals("balance")) {
                         LocalDate localDate = LocalDate.parse(parsed[0], formatter);
                         System.out.println(balanceCloseChecker(personList, localDate));
                     }
-
                 }
-
             } catch (InvalidArgumentException e) {
                 System.out.println("Illegal command arguments");
                 break;
@@ -126,7 +117,6 @@ public class Main {
 
 
     }
-
 
     //TODO подсчет [DATE balance close] до УКАЗАННОЙ ДАТЫ ()
     static String balanceCloseChecker(List<Person> personList, LocalDate date) {
@@ -170,7 +160,7 @@ public class Main {
 
     private static Map<String, Integer> countBalanceForPerson(Person person, LocalDate date) {
         Map<String, Integer> balance = new TreeMap<>();
-        List<Operation> operations = person.getAccount().getOperationsByIdForCurrentDate(date);
+        List<Operation> operations = person.getAccount().getOperationsOnDate(date);
         for (Operation operation : operations) {
             int amount = 0;
             if (operation.getType().equals(BORROW)) {
@@ -179,18 +169,16 @@ public class Main {
                 amount = operation.getAmount();
             }
 
-            String ownerName = operation.getFrom().getName();
-            if (balance.containsKey(ownerName)) {
-                balance.put(ownerName, balance.get(ownerName) + amount);
+            String partnerName = operation.getPartner().getName();
+            if (balance.containsKey(partnerName)) {
+                balance.put(partnerName, balance.get(partnerName) + amount);
             } else {
-                balance.put(ownerName, amount);
+                balance.put(partnerName, amount);
             }
 
         }
         return balance;
     }
-
-    //TODO подсчет [DATE balance open] на КОНЕЦ предыдущего месяца, не включая указанный в DATE
 
     //TODO TRANSACTION Synchronizer - синхронизатор транзакции
     public static void transactorSynchronizer(LocalDate date, Type type, Person firstPerson, Person secondPerson, int cash) {
@@ -217,21 +205,9 @@ public class Main {
         return person;
     }
 
-    //TODO Find account id by user's name
-    static int idFinder(String name) {
-        int tempId = 0;
-        for (Person person : personList) {
-            if (person.getName().equals(name)) {
-                tempId = person.getAccount().getId();
-            }
-        }
-        return tempId;
-    }
-
     //TODO парсер запроса - на выходе массив верифицированных строк запроса
     static String[] requestParserNew(String requestline) throws InvalidArgumentException, UnknownCommandException {
         String[] result = requestline.trim().split(" ");
-
 
         //TODO >> 2020.09.30  repay Bob Ann 5
         //TODO >> 2020.09.30  repay Ann
@@ -305,7 +281,6 @@ public class Main {
         }
 
     }
-
 
     //TODO проверка на наличие в вбитой строке даты в правильном формате
     static boolean isDateValid(String line) {

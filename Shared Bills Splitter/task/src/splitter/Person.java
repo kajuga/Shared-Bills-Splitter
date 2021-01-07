@@ -1,8 +1,5 @@
 package splitter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Person {
     private final String name;
     private Account account;
@@ -23,9 +20,4 @@ public class Person {
     public void setAccount(Account account) {
         this.account = account;
     }
-
-
-    //    public void addAccount(Account account) {
-//        accounts.add(account);
-//    }
 }

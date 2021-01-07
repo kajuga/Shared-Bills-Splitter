@@ -1,12 +1,10 @@
 package splitter;
 
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Account {
-    private static SecureRandom rnd = new SecureRandom();
     private int id = idGenerator(5);
     private int money;
     private List<Operation> operations = new ArrayList<>();
@@ -19,23 +17,11 @@ public class Account {
         operations.add(operation);
     }
 
-    public List<Operation> getOperations() {
-        return operations;
-    }
-
-    public int getMoney() {
-        return money;
-    }
-
-    public void setMoney(int money) {
-        this.money = money;
-    }
-
     public int getId() {
         return id;
     }
 
-    public List<Operation> getOperationsByIdForCurrentDate (LocalDate localDate) {
+    public List<Operation> getOperationsOnDate(LocalDate localDate) {
         List<Operation> result = new ArrayList<>();
         for (Operation operation : this.operations) {
             if (operation.getLocalDate().isBefore(localDate) || operation.getLocalDate().equals(localDate))
@@ -43,8 +29,6 @@ public class Account {
         }
         return result;
     }
-
-
 
     //ID generator
     private static Integer idGenerator(int amount) {
